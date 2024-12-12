@@ -225,32 +225,75 @@ def get_favorites(user_id):
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
     
 # Agregar un nuevo character a la tabla de Favorites
-@app.route('/favorites/character', methods=['POST'])
-def add_character_to_favorites():
+@app.route('/favorites/character/<int:character_id>/<int:user_id>', methods=['POST'])
+def add_character_to_favorites(character_id,user_id):
     try:
-        # Obtener los datos enviados en la solicitud
-        body = json.loads(request.data)
+        if Favorites.query.filter_by(user_id = user_id,character_id=character_id).first():
+            return jsonify({"msg": f"Character {character_id} is alredy in favorites"}), 404
 
-        # Crear un nuevo personaje en la tabla Character
-        new_character = Character(
-            first_name=body["first_name"],
-            last_name=body["last_name"],
-            height=body["height"],
-            gender=body["gender"],
-            skin_color=body["skin_color"]
+        new_favorite_character = Favorites(
+            user_id=user_id,
+            character_id=character_id
         )
-        db.session.add(new_character)
+        db.session.add(new_favorite_character)
         db.session.commit()
 
-        # Crear una entrada en la tabla Favorites vinculada al nuevo personaje
-        new_favorite = Favorites(character_id=new_character.id)
-        db.session.add(new_favorite)
+        return jsonify({"msg": "Favorite character has been created successfully"}), 201
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
+
+#agregar un nuveo planet a favoritos
+@app.route('/favorites/planet/<int:planet_id>/<int:user_id>', methods=['POST'])
+def add_planet_to_favorites(planet_id,user_id):
+    try:
+        if Favorites.query.filter_by(user_id = user_id,planet_id=planet_id).first():
+            return jsonify({"msg": f"planet {planet_id} is alredy in favorites"}), 404
+
+        new_favorite_planet = Favorites(
+            user_id=user_id,
+            planet_id=planet_id
+        )
+        db.session.add(new_favorite_planet)
         db.session.commit()
 
-        return jsonify({"msg": "Character created and added to favorites successfully"}), 200
-    except Exception as e:
-        return jsonify({"msg": "Server Error", "error": str(e)}), 500
+        return jsonify({"msg": "Favorite planet has been created successfully"}), 201
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
 
+#Agregar specie a favoritos
+
+@app.route('/favorites/specie/<int:specie_id>/<int:user_id>', methods=['POST'])
+def add_specie_to_favorites(specie_id,user_id):
+    try:
+        if Favorites.query.filter_by(user_id=user_id,specie_id=specie_id).first():
+            return jsonify({"msg": f"specie {specie_id} is alredy in favorites"}), 404
+        
+        new_favorite_specie = Favorites(
+            user_id=user_id,
+            specie_id=specie_id
+        )
+        db.session.add(new_favorite_specie)
+        db.session.commit()
+
+        return jsonify({"msg": "Favorite specie has been created successfully"}), 201
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
+
+#Eliminar un character de favoritos
+
+@app.route('/favorites/character/<int:character_id>/<int:user_id>', methods=['DELETE'])
+def delete_character_to_favorites(character_id,user_id):
+    try:
+        favorite= Favorites.query.filter_by(user_id=user_id,character_id=character_id).first()
+        if not favorite:
+            return jsonify({"msg": f"Character {character_id} don´t exist in favorites for user {user_id}"}), 404
+        
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({"msg": f"Character {character_id} has been removed from favorites successfully"}), 200
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
+    
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
