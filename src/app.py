@@ -163,7 +163,7 @@ def create_planet():
        )
        db.session.add(new_planet)
        db.session.commit()
-       return jsonify({"msg": "Character created succesfull" }),200
+       return jsonify({"msg": "planet created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
     
@@ -291,6 +291,35 @@ def delete_character_to_favorites(character_id,user_id):
         db.session.delete(favorite)
         db.session.commit()
         return jsonify({"msg": f"Character {character_id} has been removed from favorites successfully"}), 200
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
+    
+#Eliminar un planeta de favoritos
+
+@app.route('/favorites/planet/<int:planet_id>/<int:user_id>', methods=['DELETE'])
+def delete_planet_to_favorites(planet_id,user_id):
+    try:
+        favorite= Favorites.query.filter_by(user_id=user_id,planet_id=planet_id).first()
+        if not favorite:
+            return jsonify({"msg": f"planet {planet_id} don´t exist in favorites for user {user_id}"}), 404
+        
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({"msg": f"Planet {planet_id} has been removed from favorites successfully"}), 200
+    except Exception as error:
+        return jsonify({"msg": "Server error", "error": str(error)}), 500
+    
+#Eliminar una specie de favoritos  
+@app.route('/favorites/specie/<int:specie_id>/<int:user_id>', methods=['DELETE'])
+def delete_specie_to_favorites(specie_id,user_id):
+    try:
+        favorite= Favorites.query.filter_by(user_id=user_id,specie_id=specie_id).first()
+        if not favorite:
+            return jsonify({"msg": f"Specie {specie_id} don´t exist in favorites for user {user_id}"}), 404
+        
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({"msg": f"Specie {specie_id} has been removed from favorites successfully"}), 200
     except Exception as error:
         return jsonify({"msg": "Server error", "error": str(error)}), 500
     
