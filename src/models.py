@@ -20,7 +20,7 @@ class User(db.Model):
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50),)
     hight = db.Column(db.Float, nullable=False)
     gender = db.Column(db.String(50), nullable=False)
     skin_color = db.Column(db.String(50), nullable=False)

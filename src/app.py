@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User , Character ,Planet , Specie
+from models import db, User , Character ,Planet , Specie ,Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -50,7 +50,7 @@ def get_all_users():
 
 
 # Obtener un usuario
-@app.route('/User/int:user_id', methods=['GET'])
+@app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     try:
        user = User.query.get(user_id)
@@ -60,6 +60,8 @@ def get_user(user_id):
        return serialized_user,200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+    
+
 
 # Crear  un usuario
 @app.route('/user', methods=['POST'])
@@ -93,7 +95,7 @@ def get_all_characters():
 
 
 # Obtener un personaje
-@app.route('/character/int:character_id', methods=['GET'])
+@app.route('/character/<int:character_id>', methods=['GET'])
 def get_character(character_id):
     try:
        character = Character.query.get(character_id)
@@ -136,7 +138,7 @@ def get_all_planets():
 
 
 # Obtener un planeta
-@app.route('/planet/int:planet_id', methods=['GET'])
+@app.route('/planet/<int:planet_id>', methods=['GET'])
 def get_planet(planet_id):
     try:
        planet = Planet.query.get(planet_id)
@@ -180,7 +182,7 @@ def get_all_species():
 
 
 # Obtener una especie
-@app.route('/specie/int:specie_id', methods=['GET'])
+@app.route('/specie/<int:specie_id>', methods=['GET'])
 def get_specie(specie_id):
     try:
        specie = Specie.query.get(specie_id)
@@ -208,7 +210,47 @@ def create_specie():
        return jsonify({"msg": "Specie created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+
+#Obtener los favoritos de un usuario
+@app.route('/user/<int:user_id>/favorites', methods=['GET'])
+def get_favorites(user_id):
+    try:
+       user = User.query.get(user_id)
+       if user is None:
+           return jsonify({"msg": f"user {user_id} not found" }),404
+       favorites = Favorites.query.filter_by(user_id=user_id).all()
+       serialized_favorites = [favorite.serialize() for favorite in favorites]
+       return jsonify(serialized_favorites),200
+    except Exception as e:
+        return jsonify({"msg": "Server Error" , "error": str(e)}),500 
     
+# Agregar un nuevo character a la tabla de Favorites
+@app.route('/favorites/character', methods=['POST'])
+def add_character_to_favorites():
+    try:
+        # Obtener los datos enviados en la solicitud
+        body = json.loads(request.data)
+
+        # Crear un nuevo personaje en la tabla Character
+        new_character = Character(
+            first_name=body["first_name"],
+            last_name=body["last_name"],
+            height=body["height"],
+            gender=body["gender"],
+            skin_color=body["skin_color"]
+        )
+        db.session.add(new_character)
+        db.session.commit()
+
+        # Crear una entrada en la tabla Favorites vinculada al nuevo personaje
+        new_favorite = Favorites(character_id=new_character.id)
+        db.session.add(new_favorite)
+        db.session.commit()
+
+        return jsonify({"msg": "Character created and added to favorites successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error", "error": str(e)}), 500
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
