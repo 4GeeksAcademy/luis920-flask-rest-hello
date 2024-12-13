@@ -79,7 +79,20 @@ def create_user():
        return jsonify({"msg": "User created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
-
+    
+#Eliminar un usuario 
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+       user = User.query.filter_by(id=user_id).first()
+       if not user:
+           return jsonify({"msg": f"user {user_id} not found" }),404
+      
+       db.session.delete(user)
+       db.session.commit()
+       return jsonify({"msg": f"User {user_id} has been removed successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error" , "error": str(e)}),500 
 
 # Obtener todos los personajes
 @app.route('/character', methods=['GET'])
@@ -121,6 +134,20 @@ def create_character():
        db.session.add(new_character)
        db.session.commit()
        return jsonify({"msg": "Character created succesfull" }),200
+    except Exception as e:
+        return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+
+#Eliminar un personaje
+@app.route('/character/<int:character_id>', methods=['DELETE'])
+def delete_character(character_id):
+    try:
+       character = Character.query.filter_by(id=character_id).first()
+       if not character:
+           return jsonify({"msg": f"character {character_id} not found" }),404
+      
+       db.session.delete(character)
+       db.session.commit()
+       return jsonify({"msg": f"Character {character_id} has been removed successfully"}), 200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
     
@@ -166,6 +193,20 @@ def create_planet():
        return jsonify({"msg": "planet created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+
+#Eliminar un planeta
+@app.route('/planet/<int:planet_id>', methods=['DELETE'])
+def delete_planet(planet_id):
+    try:
+       planet = Planet.query.filter_by(id=planet_id).first()
+       if not planet:
+           return jsonify({"msg": f"planet {planet_id} not found" }),404
+      
+       db.session.delete(planet)
+       db.session.commit()
+       return jsonify({"msg": f"planet {planet_id} has been removed successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error" , "error": str(e)}),500 
     
 
     # Obtener todas las especies
@@ -208,6 +249,20 @@ def create_specie():
        db.session.add(new_specie)
        db.session.commit()
        return jsonify({"msg": "Specie created succesfull" }),200
+    except Exception as e:
+        return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+
+#Eliminar una especie
+@app.route('/specie/<int:specie_id>', methods=['DELETE'])
+def delete_specie(specie_id):
+    try:
+       specie = Specie.query.filter_by(id=specie_id).first()
+       if not specie:
+           return jsonify({"msg": f"specie {specie_id} not found" }),404
+      
+       db.session.delete(specie)
+       db.session.commit()
+       return jsonify({"msg": f"specie {specie_id} has been removed successfully"}), 200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
 
