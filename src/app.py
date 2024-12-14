@@ -137,6 +137,27 @@ def create_character():
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
 
+#Actualizar un personaje
+@app.route('/character/<int:character_id>', methods=['PUT'])
+def update_character(character_id):
+    try:
+        body = json.loads(request.data)
+        character = Character.query.get(character_id)
+        if not character:
+            return jsonify({"msg": " not found"}), 404
+
+        character.first_name = body.get("first_name", character.first_name)
+        character.last_name = body.get("last_name", character.last_name)
+        character.hight = body.get("hight", character.hight)
+        character.gender = body.get("gender", character.gender)
+        character.skin_color = body.get("skin_color", character.skin_color)
+
+        db.session.commit()
+        return jsonify({"msg": "Character updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error", "error": str(e)}), 500
+
+
 #Eliminar un personaje
 @app.route('/character/<int:character_id>', methods=['DELETE'])
 def delete_character(character_id):
@@ -193,6 +214,26 @@ def create_planet():
        return jsonify({"msg": "planet created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+    
+ #Actualizar un planeta
+@app.route('/planet/<int:planet_id>', methods=['PUT'])
+def update_planet(planet_id):
+    try:
+        body = json.loads(request.data)
+        planet = Planet.query.get(planet_id)
+        if not planet:
+            return jsonify({"msg": "Planet not found"}), 404
+
+        planet.name = body.get("name", planet.name)
+        planet.diameter = body.get("diameter", planet.diameter)
+        planet.climate = body.get("climate", planet.climate)
+        planet.terrain = body.get("terrain", planet.terrain)
+
+        db.session.commit()
+        return jsonify({"msg": "Planet updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error", "error": str(e)}), 500
+
 
 #Eliminar un planeta
 @app.route('/planet/<int:planet_id>', methods=['DELETE'])
@@ -251,6 +292,25 @@ def create_specie():
        return jsonify({"msg": "Specie created succesfull" }),200
     except Exception as e:
         return jsonify({"msg": "Server Error" , "error": str(e)}),500 
+    
+#Actualizar una especie
+@app.route('/specie/<int:specie_id>', methods=['PUT'])
+def update_specie(specie_id):
+    try:
+        body = json.loads(request.data)
+        specie = Specie.query.get(specie_id)
+        if not specie:
+            return jsonify({"msg": " not found"}), 404
+
+        specie.name = body.get("name", specie.name)
+        specie.lenguage = body.get("lenguage", specie.lenguage)
+        specie.average_height = body.get("average_height", specie.average_height)
+        specie.average_lifespan = body.get("average_lifespan", specie.average_lifespan)
+
+        db.session.commit()
+        return jsonify({"msg": "Specie updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"msg": "Server Error", "error": str(e)}), 500
 
 #Eliminar una especie
 @app.route('/specie/<int:specie_id>', methods=['DELETE'])
